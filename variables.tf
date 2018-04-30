@@ -40,6 +40,11 @@ variable "redshift_subnets" {
   default     = []
 }
 
+variable "redshift_subnets_public" {
+  description = "whether redshift subnets should have public routing or not"
+  default     = false
+}
+
 variable "elasticache_subnets" {
   type        = "list"
   description = "A list of elasticache subnets"

@@ -316,10 +316,17 @@ resource "aws_route_table_association" "database" {
 }
 
 resource "aws_route_table_association" "redshift" {
-  count = "${var.create_vpc && length(var.redshift_subnets) > 0 ? length(var.redshift_subnets) : 0}"
+  count = "${var.create_vpc && length(var.redshift_subnets) > 0 && ! var.redshift_subnets_public ? length(var.redshift_subnets) : 0}"
 
   subnet_id      = "${element(aws_subnet.redshift.*.id, count.index)}"
   route_table_id = "${element(aws_route_table.private.*.id, (var.single_nat_gateway ? 0 : count.index))}"
+}
+
+resource "aws_route_table_association" "redshift_public" {
+  count = "${var.create_vpc && length(var.redshift_subnets) > 0 && var.redshift_subnets_public ? length(var.redshift_subnets) : 0}"
+
+  subnet_id      = "${element(aws_subnet.redshift.*.id, count.index)}"
+  route_table_id = "${element(aws_route_table.public.*.id, (var.single_nat_gateway ? 0 : count.index))}"
 }
 
 resource "aws_route_table_association" "elasticache" {
